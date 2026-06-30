@@ -2,12 +2,7 @@ import type { Request, Response, NextFunction } from 'express';
 import { ResourceNotFoundError } from '../../../core/errors/resource-not-found-error';
 import { InvalidStateTransitionError } from '../../../core/errors/invalid-state-transition-error';
 
-export function errorHandler(
-  err: Error,
-  _req: Request,
-  res: Response,
-  _next: NextFunction,
-) {
+export function errorHandler(err: Error, _req: Request, res: Response, _next: NextFunction) {
   if (err instanceof ResourceNotFoundError) {
     return res.status(404).json({ message: err.message });
   }
