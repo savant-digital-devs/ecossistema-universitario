@@ -55,15 +55,13 @@ describe('RefreshTokenUseCase', () => {
 
     await sut.execute({ refreshToken });
 
-    await expect(
-      sut.execute({ refreshToken }),
-    ).rejects.toThrow('Sessão não encontrado.');
+    await expect(sut.execute({ refreshToken })).rejects.toThrow('Sessão não encontrado.');
   });
 
   it('lança erro com refresh token inexistente', async () => {
-    await expect(
-      sut.execute({ refreshToken: 'token-invalido' }),
-    ).rejects.toThrow('Sessão não encontrado.');
+    await expect(sut.execute({ refreshToken: 'token-invalido' })).rejects.toThrow(
+      'Sessão não encontrado.',
+    );
   });
 
   it('lança erro com refresh token expirado', async () => {
@@ -81,8 +79,6 @@ describe('RefreshTokenUseCase', () => {
 
     sessionRepository.items[0].expiresAt = new Date('2020-01-01');
 
-    await expect(
-      sut.execute({ refreshToken }),
-    ).rejects.toThrow('Sessão não encontrado.');
+    await expect(sut.execute({ refreshToken })).rejects.toThrow('Sessão não encontrado.');
   });
 });
