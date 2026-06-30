@@ -22,10 +22,7 @@ export class AuthenticateUserUseCase {
     private readonly sessionRepository: SessionRepository,
   ) {}
 
-  async execute({
-    email,
-    password,
-  }: AuthenticateUserRequest): Promise<AuthenticateUserResponse> {
+  async execute({ email, password }: AuthenticateUserRequest): Promise<AuthenticateUserResponse> {
     const user = await this.userRepository.findByEmail(email);
 
     if (!user) {
