@@ -1,5 +1,8 @@
 import { prisma } from '../prisma-client';
-import type { UserRepository, UserData } from '../../../modules/academic/repositories/user-repository';
+import type {
+  UserRepository,
+  UserData,
+} from '../../../modules/academic/repositories/user-repository';
 
 export class PrismaUserRepository implements UserRepository {
   async findById(id: string): Promise<UserData | null> {
