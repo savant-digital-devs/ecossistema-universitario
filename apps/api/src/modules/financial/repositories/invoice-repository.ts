@@ -1,4 +1,4 @@
-import { Decimal } from "../../../infra/database/generated/internal/prismaNamespace";
+import { Decimal } from '../../../infra/database/generated/internal/prismaNamespace';
 
 export interface InvoiceData {
   id: string;

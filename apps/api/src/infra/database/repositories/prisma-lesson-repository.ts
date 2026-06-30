@@ -1,5 +1,8 @@
 import { prisma } from '../prisma-client';
-import type { LessonRepository, LessonData } from '../../../modules/lms/repositories/lesson-repository';
+import type {
+  LessonRepository,
+  LessonData,
+} from '../../../modules/lms/repositories/lesson-repository';
 
 export class PrismaLessonRepository implements LessonRepository {
   async findById(id: string): Promise<LessonData | null> {

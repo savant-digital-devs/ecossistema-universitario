@@ -1,5 +1,8 @@
 import { prisma } from '../prisma-client';
-import type { InvoiceRepository, InvoiceData } from '../../../modules/financial/repositories/invoice-repository';
+import type {
+  InvoiceRepository,
+  InvoiceData,
+} from '../../../modules/financial/repositories/invoice-repository';
 
 export class PrismaInvoiceRepository implements InvoiceRepository {
   async findById(id: string): Promise<InvoiceData | null> {
