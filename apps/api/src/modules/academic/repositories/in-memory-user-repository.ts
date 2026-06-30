@@ -12,8 +12,8 @@ export class InMemoryUserRepository implements UserRepository {
     return this.items.find((user) => user.email === email) ?? null;
   }
 
-  async create(data: Omit<UserData, 'id'>): Promise<UserData> {
-    const user: UserData = { id: randomUUID(), ...data };
+  async create(data: Omit<UserData, 'id' | 'role'>): Promise<UserData> {
+    const user: UserData = { id: randomUUID(), role: 'STUDENT', ...data };
     this.items.push(user);
     return user;
   }

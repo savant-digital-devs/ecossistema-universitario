@@ -8,7 +8,7 @@ describe('InMemoryUserRepository', () => {
     repository = new InMemoryUserRepository();
   });
 
-  it('cria um usuário e gera um id automaticamente', async () => {
+  it('cria um usuário e gera um id automaticamente com role padrão STUDENT', async () => {
     const user = await repository.create({
       name: 'Maria Silva',
       email: 'maria@exemplo.com',
@@ -18,6 +18,7 @@ describe('InMemoryUserRepository', () => {
 
     expect(user.id).toBeDefined();
     expect(user.name).toBe('Maria Silva');
+    expect(user.role).toBe('STUDENT');
   });
 
   it('encontra um usuário pelo id', async () => {
