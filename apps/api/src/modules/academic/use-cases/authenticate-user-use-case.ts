@@ -1,5 +1,5 @@
 import { compare } from 'bcryptjs';
-import { sign } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { randomUUID } from 'node:crypto';
 import { env } from '../../../infra/config/env';
 import type { UserRepository } from '../repositories/user-repository';
@@ -35,7 +35,7 @@ export class AuthenticateUserUseCase {
       throw new ResourceNotFoundError('Usuário');
     }
 
-    const accessToken = sign({ role: user.role }, env.JWT_SECRET, {
+    const accessToken = jwt.sign({ role: user.role }, env.JWT_SECRET, {
       subject: user.id,
       expiresIn: env.JWT_EXPIRES_IN as '15m',
     });
