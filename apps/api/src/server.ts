@@ -1,12 +1,14 @@
 import express from 'express';
+import { prisma } from './infra/database/prisma-client';
+import { env } from './infra/config/env';
 
 const app = express();
-const PORT = process.env.PORT || 3333;
 
-app.get('/health', (_req, res) => {
-  res.json({ status: 'ok' });
+app.get('/health', async (_req, res) => {
+  const userCount = await prisma.user.count();
+  res.json({ status: 'ok', usersInDatabase: userCount });
 });
 
-app.listen(PORT, () => {
-  console.log(`API rodando na porta ${PORT}`);
+app.listen(env.PORT, () => {
+  console.log(`API rodando na porta ${env.PORT}`);
 });
