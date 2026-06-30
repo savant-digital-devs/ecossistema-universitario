@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { InMemoryUserRepository } from './in-memory-user-repository';
+import { compare } from 'bcryptjs';
+import { hash } from 'bcryptjs';
 
 describe('InMemoryUserRepository', () => {
   let repository: InMemoryUserRepository;
@@ -51,5 +53,21 @@ describe('InMemoryUserRepository', () => {
     const found = await repository.findById('id-que-nao-existe');
 
     expect(found).toBeNull();
+  });
+
+  it('atualiza a senha do usuário', async () => {
+    const created = await repository.create({
+      name: 'Maria Silva',
+      email: 'maria@exemplo.com',
+      passwordHash: await hash('senha-antiga', 8),
+      cpf: '12345678900',
+    });
+
+    const novoHash = await hash('nova-senha', 8);
+    await repository.updatePassword(created.id, novoHash);
+
+    const updated = repository.items.find((u) => u.id === created.id);
+    const senhaCorreta = await compare('nova-senha', updated!.passwordHash);
+    expect(senhaCorreta).toBe(true);
   });
 });
