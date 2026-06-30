@@ -7,13 +7,278 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Role {
+  ADMIN
+  PROFESSOR
+  STUDENT
+}
+
 model User {
-  id           String   @id @default(uuid())
-  name         String
-  email        String   @unique
-  passwordHash String   @map("password_hash")
-  cpf          String   @unique
-  createdAt    DateTime @default(now()) @map("created_at")
+  id               String            @id @default(uuid())
+  name             String
+  email            String            @unique
+  passwordHash     String            @map("password_hash")
+  role             Role              @default(STUDENT)
+  cpf              String            @unique
+  createdAt        DateTime          @default(now()) @map("created_at")
+  sessions         Session[]
+  enrollments      Enrollment[]
+  documentRequests DocumentRequest[]
+  statusLogs       StatusLog[]
+  invoices         Invoice[]
+  submissions      Submission[]
+  subjects         Subject[]         @relation("ProfessorSubjects")
 
   @@map("users")
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  refreshToken String   @unique @map("refresh_token")
+  expiresAt    DateTime @map("expires_at")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  PAUSED
+  CANCELED
+  GRADUATED
+}
+
+model Course {
+  id             String       @id @default(uuid())
+  name           String
+  description    String?
+  durationMonths Int          @map("duration_months")
+  subjects       Subject[]
+  enrollments    Enrollment[]
+
+  @@map("courses")
+}
+
+model Subject {
+  id            String   @id @default(uuid())
+  name          String
+  courseId      String   @map("course_id")
+  workloadHours Int      @map("workload_hours")
+  course        Course   @relation(fields: [courseId], references: [id])
+  professors    User[]   @relation("ProfessorSubjects")
+  modules       Module[]
+  grades        Grade[]
+
+  @@map("subjects")
+}
+
+model Enrollment {
+  id        String           @id @default(uuid())
+  studentId String           @map("student_id")
+  courseId  String           @map("course_id")
+  status    EnrollmentStatus @default(ACTIVE)
+  student   User             @relation(fields: [studentId], references: [id])
+  course    Course           @relation(fields: [courseId], references: [id])
+  grades    Grade[]
+
+  @@map("enrollments")
+}
+
+model Grade {
+  id                   String     @id @default(uuid())
+  enrollmentId         String     @map("enrollment_id")
+  subjectId            String     @map("subject_id")
+  finalScore           Decimal?   @map("final_score") @db.Decimal(5, 2)
+  attendancePercentage Decimal    @map("attendance_percentage") @db.Decimal(5, 2)
+  enrollment           Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  subject              Subject    @relation(fields: [subjectId], references: [id])
+
+  @@map("grades")
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  OVERDUE
+}
+
+model Invoice {
+  id        String        @id @default(uuid())
+  studentId String        @map("student_id")
+  amount    Decimal       @db.Decimal(10, 2)
+  dueDate   DateTime      @map("due_date")
+  status    InvoiceStatus @default(PENDING)
+  type      String        // TUITION, REQUISITION_FEE
+  student   User          @relation(fields: [studentId], references: [id])
+  payments  Payment[]
+
+  @@map("invoices")
+}
+
+model Payment {
+  id         String   @id @default(uuid())
+  invoiceId  String   @map("invoice_id")
+  amountPaid Decimal  @map("amount_paid") @db.Decimal(10, 2)
+  method     String   // PIX, CREDIT_CARD, BOLETO
+  paidAt     DateTime @default(now()) @map("paid_at")
+  invoice    Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+enum RequestStatus {
+  PENDING_PAYMENT
+  PROCESSING
+  READY
+  DELIVERED
+  REJECTED
+}
+
+model DocumentRequest {
+  id        String        @id @default(uuid())
+  studentId String        @map("student_id")
+  type      String        // TRANSCRIPT, DIPLOMA, ENROLLMENT_DECLARATION
+  status    RequestStatus @default(PENDING_PAYMENT)
+  feeAmount Decimal       @map("fee_amount") @db.Decimal(10, 2)
+  student   User          @relation(fields: [studentId], references: [id])
+  logs      StatusLog[]
+
+  @@map("document_requests")
+}
+
+model StatusLog {
+  id              String          @id @default(uuid())
+  requestId       String          @map("request_id")
+  changedByUserId String          @map("changed_by_user_id")
+  oldStatus       RequestStatus?  @map("old_status")
+  newStatus       RequestStatus   @map("new_status")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  request         DocumentRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  operator        User            @relation(fields: [changedByUserId], references: [id])
+
+  @@map("status_logs")
+}
+
+enum LessonType {
+  VIDEO
+  PDF
+  TEXT
+}
+
+model Module {
+  id         String    @id @default(uuid())
+  subjectId  String    @map("subject_id")
+  title      String
+  orderIndex Int       @map("order_index")
+  subject    Subject   @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  lessons    Lesson[]
+
+  @@map("modules")
+}
+
+model Lesson {
+  id          String       @id @default(uuid())
+  moduleId    String       @map("module_id")
+  title       String
+  type        LessonType   @default(VIDEO)
+  contentUrl  String       @map("content_url") // Links do YT ou caminhos no S3
+  orderIndex  Int          @map("order_index")
+  module      Module       @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  attachments Attachment[]
+  progresses  Progress[]
+  assessments Assessment[]
+
+  @@map("lessons")
+}
+
+model Attachment {
+  id       String @id @default(uuid())
+  lessonId String @map("lesson_id")
+  name     String
+  fileUrl  String @map("file_url")
+  type     String // IMAGE, PDF
+  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@map("attachments")
+}
+
+model Progress {
+  id                String  @id @default(uuid())
+  studentId         String  @map("student_id")
+  lessonId          String  @map("lesson_id")
+  isCompleted       Boolean @default(false) @map("is_completed")
+  lastWatchedSecond Int     @default(0) @map("last_watched_second")
+  lesson            Lesson  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, lessonId])
+  @@map("progresses")
+}
+
+enum QuestionType {
+  OPEN
+  CLOSED
+}
+
+model Assessment {
+  id          String       @id @default(uuid())
+  lessonId    String       @map("lesson_id")
+  title       String
+  dueDate     DateTime     @map("due_date")
+  maxScore    Decimal      @map("max_score") @db.Decimal(5, 2)
+  lesson      Lesson       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  questions   Question[]
+  submissions Submission[]
+
+  @@map("assessments")
+}
+
+model Question {
+  id           String        @id @default(uuid())
+  assessmentId String        @map("assessment_id")
+  text         String
+  type         QuestionType  @default(CLOSED)
+  pointsValue  Decimal       @map("points_value") @db.Decimal(5, 2)
+  assessment   Assessment    @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  alternatives Alternative[]
+  answers      Answer[]
+
+  @@map("questions")
+}
+
+model Alternative {
+  id         String   @id @default(uuid())
+  questionId String   @map("question_id")
+  text       String
+  isCorrect  Boolean  @map("is_correct")
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  answers    Answer[]
+
+  @@map("alternatives")
+}
+
+model Submission {
+  id           String     @id @default(uuid())
+  assessmentId String     @map("assessment_id")
+  studentId    String     @map("student_id")
+  totalScore   Decimal?   @map("total_score") @db.Decimal(5, 2)
+  gradedAt     DateTime?  @map("graded_at")
+  assessment   Assessment @relation(fields: [assessmentId], references: [id])
+  student      User       @relation(fields: [studentId], references: [id])
+  answers      Answer[]
+
+  @@map("submissions")
+}
+
+model Answer {
+  id                    String       @id @default(uuid())
+  submissionId          String       @map("submission_id")
+  questionId            String       @map("question_id")
+  textAnswer            String?      @map("text_answer")
+  selectedAlternativeId String?      @map("selected_alternative_id")
+  submission            Submission   @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  question              Question     @relation(fields: [questionId], references: [id])
+  alternative           Alternative? @relation(fields: [selectedAlternativeId], references: [id])
+
+  @@map("answers")
 }
