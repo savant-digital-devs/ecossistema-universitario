@@ -25,12 +25,7 @@ export class ForgotPasswordUseCase {
 
     const resetToken = randomUUID();
 
-    await this.cache.set(
-      `reset-password:${resetToken}`,
-      user.id,
-      'EX',
-      RESET_TOKEN_TTL_SECONDS,
-    );
+    await this.cache.set(`reset-password:${resetToken}`, user.id, 'EX', RESET_TOKEN_TTL_SECONDS);
 
     await emailQueue.add('send-email', {
       to: user.email,

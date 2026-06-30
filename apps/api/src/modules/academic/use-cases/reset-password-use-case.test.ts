@@ -31,7 +31,10 @@ describe('ResetPasswordUseCase', () => {
 
     await forgotPasswordUseCase.execute({ email: 'maria@exemplo.com' });
 
-    const token = Array.from((cache as any).store.keys() as IterableIterator<string>)[0].replace('reset-password:', '');
+    const token = Array.from((cache as any).store.keys() as IterableIterator<string>)[0].replace(
+      'reset-password:',
+      '',
+    );
 
     await sut.execute({ token, newPassword: 'novasenha456' });
 
@@ -50,13 +53,16 @@ describe('ResetPasswordUseCase', () => {
 
     await forgotPasswordUseCase.execute({ email: 'maria@exemplo.com' });
 
-    const token = Array.from((cache as any).store.keys() as IterableIterator<string>)[0].replace('reset-password:', '');
+    const token = Array.from((cache as any).store.keys() as IterableIterator<string>)[0].replace(
+      'reset-password:',
+      '',
+    );
 
     await sut.execute({ token, newPassword: 'novasenha456' });
 
-    await expect(
-      sut.execute({ token, newPassword: 'outrasenha' }),
-    ).rejects.toThrow('Token não encontrado.');
+    await expect(sut.execute({ token, newPassword: 'outrasenha' })).rejects.toThrow(
+      'Token não encontrado.',
+    );
   });
 
   it('lança erro com token inválido', async () => {
