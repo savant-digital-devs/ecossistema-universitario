@@ -1,8 +1,8 @@
-import { prisma } from '../prisma-client';
+import { prisma } from '../../prisma-client';
 import type {
   SessionRepository,
   SessionData,
-} from '../../../modules/academic/repositories/session-repository';
+} from '../../../../modules/academic/repositories/session-repository';
 
 export class PrismaSessionRepository implements SessionRepository {
   async create(data: Omit<SessionData, 'id'>): Promise<SessionData> {

@@ -4,8 +4,8 @@ import { AuthenticateUserUseCase } from '../../../modules/academic/use-cases/aut
 import { RefreshTokenUseCase } from '../../../modules/academic/use-cases/refresh-token-use-case';
 import { ForgotPasswordUseCase } from '../../../modules/academic/use-cases/forgot-password-use-case';
 import { ResetPasswordUseCase } from '../../../modules/academic/use-cases/reset-password-use-case';
-import { PrismaUserRepository } from '../../database/repositories/prisma-user-repository';
-import { PrismaSessionRepository } from '../../database/repositories/prisma-session-repository';
+import { PrismaUserRepository } from '../../database/repositories/academic/prisma-user-repository';
+import { PrismaSessionRepository } from '../../database/repositories/academic/prisma-session-repository';
 import { redisCacheClient } from '../../cache/redis-cache-client';
 
 const router: IRouter = Router();

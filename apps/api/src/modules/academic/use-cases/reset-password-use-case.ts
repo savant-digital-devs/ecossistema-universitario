@@ -1,5 +1,5 @@
 import { hash } from 'bcryptjs';
-import type { UserRepository } from '../repositories/user-repository';
+import type { UserRepository } from '../repositories/users/user-repository';
 import { ResourceNotFoundError } from '../../../core/errors/resource-not-found-error';
 
 interface CacheClient {

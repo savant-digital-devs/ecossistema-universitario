@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { ResetPasswordUseCase } from './reset-password-use-case';
 import { RegisterUserUseCase } from './register-user-use-case';
 import { ForgotPasswordUseCase } from './forgot-password-use-case';
-import { InMemoryUserRepository } from '../repositories/in-memory-user-repository';
+import { InMemoryUserRepository } from '../repositories/users/in-memory-user-repository';
 import { FakeRedisClient } from '../../../infra/cache/fake-redis-client';
 import { compare } from 'bcryptjs';
 

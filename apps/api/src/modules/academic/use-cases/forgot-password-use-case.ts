@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { emailQueue } from '../../../infra/queue/queues';
-import type { UserRepository } from '../repositories/user-repository';
+import type { UserRepository } from '../repositories/users/user-repository';
 
 interface CacheClient {
   set(key: string, value: string, mode: 'EX', ttl: number): Promise<void>;

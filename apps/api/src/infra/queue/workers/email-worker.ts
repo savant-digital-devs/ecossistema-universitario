@@ -12,14 +12,13 @@ export const emailWorker = new Worker<EmailJobData>(
   async (job) => {
     const { to, subject, body } = job.data;
 
-    // aqui vai entrar o SMTP real na Fase 3
-    console.log(`Enviando e-mail para ${to}: ${subject}\n${body}`);
+    console.warn(`Enviando e-mail para ${to}: ${subject}\n${body}`);
   },
   { connection: queueConnection },
 );
 
 emailWorker.on('completed', (job) => {
-  console.log(`Job ${job.id} concluído com sucesso`);
+  console.warn(`Job ${job.id} concluído com sucesso`);
 });
 
 emailWorker.on('failed', (job, err) => {
