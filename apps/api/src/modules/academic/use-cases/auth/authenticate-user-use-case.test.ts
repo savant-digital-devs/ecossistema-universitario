@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { AuthenticateUserUseCase } from './authenticate-user-use-case';
 import { RegisterUserUseCase } from './register-user-use-case';
-import { InMemoryUserRepository } from '../repositories/users/in-memory-user-repository';
-import { InMemorySessionRepository } from '../repositories/sessions/in-memory-session-repository';
+import { InMemoryUserRepository } from '../../repositories/users/in-memory-user-repository';
+import { InMemorySessionRepository } from '../../repositories/sessions/in-memory-session-repository';
 
 describe('AuthenticateUserUseCase', () => {
   let userRepository: InMemoryUserRepository;

@@ -1,9 +1,9 @@
 import jwt from 'jsonwebtoken';
 import { randomUUID } from 'node:crypto';
-import { env } from '../../../infra/config/env';
-import type { UserRepository } from '../repositories/users/user-repository';
-import type { SessionRepository } from '../repositories/sessions/session-repository';
-import { ResourceNotFoundError } from '../../../core/errors/resource-not-found-error';
+import { env } from '../../../../infra/config/env';
+import type { UserRepository } from '../../repositories/users/user-repository';
+import type { SessionRepository } from '../../repositories/sessions/session-repository';
+import { ResourceNotFoundError } from '../../../../core/errors/resource-not-found-error';
 
 interface RefreshTokenRequest {
   refreshToken: string;

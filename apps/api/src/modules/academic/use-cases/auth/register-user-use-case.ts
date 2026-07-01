@@ -1,5 +1,5 @@
 import { hash } from 'bcryptjs';
-import type { UserRepository } from '../repositories/users/user-repository';
+import type { UserRepository } from '../../repositories/users/user-repository';
 
 interface RegisterUserRequest {
   name: string;
